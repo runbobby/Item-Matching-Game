@@ -50,13 +50,31 @@ Remark 1: Let S = 5, I = 7, T = 4. I claim that we can't guarantee winning. Inde
 
 (If I <= T, we can guarantee winning by guessing all item 1 for query 1, then all item 2 (except known correct spots) for query 2, then all item 3, etc.)
 
+Remark 2: We only consider deterministic strategies. It's intuitively obvious that some deterministic strategy is optimal. However, we will omit the proof of this
+
 -----------------------------------------------------
 Section 2. _Method of Exact Solution_
 
 There is one main lemma about probabilities that simplifies the analysis and reduces this to a counting problem. The rest of the simplifying steps are algorithmic in nature. Broadly speaking, we use a lot of isomorphisms to reduce the number of cases computed. Certain states are isomorphic, and for a certain guess, certain queries are isomorphic.
 
-(Definition: A state is a possible sequence of past queries and responses. This completely determines the subproblem.)
+(Definition: A state is the following data: the number of turns left and the sequence of past queries and responses, This completely determines the subproblem.)
 
 We also precompute certain data structures to reject certain ordered triples of (state, query, response). Another main step is to quite efficiently test if a certain state has at least one valid assignment. For example, we can loop through all I^S item sequences and test satisfiability, but this is slow.  The last main step is to recursively evaluate a state by maximizing over all possible guesses. This involves memoization to recall previously computed evaluations.
 
-Main Lemma: (to be continued, maybe)
+Main Lemma: 
+
+First, a definition. Let s be a The branching count for s is the maximum over all strategies of the number of different responses. Our convention is that we don't get a response after the last turn.
+
+For example, the branching count for a state with one turn left is always 1. We ignore states with zero turns left.
+
+Lemma: The max probability of winning from state s is equal to the branching count for s divided by the number of valid assignments consistent with s.
+
+Proof: Induction on number of turns left. (Ignore zero turns left).
+
+Base case: 1 turn left. Clear.
+
+Inductive step: Assume true for n turns left. Consider a state s with n+1 turns left. Let T_s be the set of consistent assignments. A single strategy always has a first query (which is deterministic), call it Q_1. There's a certain number of possible responses. There is a one-to-one correspondence from possible responses to possible values of the next state (and these next states have n turns left). Also, the possible responses partitions T_s. Let the next states be s_1, ..., s_k. Then T\_(s\_1) ..., T\_(s\_k) partition T_s. By the inductive assumption, the maximum win probability from state s_1 equals bc(s_1) / # T\_(s\_1), etc. The probability of state s_1 equals exactly # T\_(s\_1) / # T_s (because states are uniformly chosen to begin with; thereafter, all conditional distributions are uniform over the space of consistent stuff). Therefore, a simple conditional computation shows that the max probability of winning from state s starting with query Q_1 is equal to (sum_i bc(s_i)) / # T_s. The maximum probability of winning from state s equals 
+(max\_(Q_1) (sum_i bc(s_i))) / # T_s.
+It remains to show that the numberator equals bc(s). This is intuitively obvious, and we omit a rigorous proof.
+
+Corollary: we can recursively compute the branching count of states. To switch to probabilities, we just need to divide by the number of consistent assignments. This is easy for one state and potentially less easy for lots of states. We will assume that we only want probabilities for few states so that it's easy to compute the denominator. Thus, our problem is equivalently computing the branching count.
