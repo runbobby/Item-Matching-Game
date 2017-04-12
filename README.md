@@ -101,3 +101,13 @@ For a given state and query, there's up to 3^u possible responses. This gives a 
 
 For a given triple (state, query, response), we want to compute the new state (or its isomorphism class) and test consistency/validity. This is not easy, and the various checks are often in different parts of the program. Certain elements of consistency can be computed per item. We might take the row of state.grid for an item along with its response and check consistency. Importantly, this can be precomputed based on whether the item is orange, yellow, or gray; and this doesn't depent on other items. (Because of this subtask is independent of other tasks, this subtask would be repeated many times and makes precomputation natural.) Also, given (state.grid.row(item) and response(item)), we need to compute the new row, and this subtask is independent of other items, so this can also be precomputed. Another check is that the number of new orange items is not greater than the number of new unsolved slots. (For example, in a state, we can't have 5 orange items and 4 unsolved slots). 
 
+-----------------------------------------------------
+Section 3: So what's the strategy?
+
+Well, for 5 slots, 4 turns, 10 items, it looks like the first two queries always use as many new items as possible. I consider this very unfurprising. why would we need a huge python program to tell us this? :) Note that after 3 queries, all branching counts are 1. Therefore, after two queries, we just need to maximize the branching count for one choice, which is theoretically easy.
+
+For less than 9 items, e.g. 7, it's much less clear what the second query should be. Therefore, our exact computation could be considered interesting.
+
+Perhaps something like 6 slots, 8 - 10 items, 5 turns would be more interesting. In that case, the first  query looks like it sohuld be 6 unique items, but second query is not obvious (buy could be guess). The third would definitely not be obvious. 
+
+I think that an approximate solution by a human (time-constrained) would be much worse than the values given here.
